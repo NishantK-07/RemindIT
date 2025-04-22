@@ -14,7 +14,7 @@ const client = require('twilio')(accountSid, authToken);
 const sendsms=async (body)=>{
     let msgOptions={
         from : process.env.TWILIOPHNO,
-        to:'+919310501448',
+        to:'+64684651646546',
         body,
     };
     try {
@@ -23,9 +23,9 @@ const sendsms=async (body)=>{
         //     to: '+18777804236'
         // })
         // .then(message => console.log(message.sid));
-        console.log(message)
+        // console.log(message)
     } catch (error) {
-        console.log(err)
+        // console.log(err)
     }
 }
 

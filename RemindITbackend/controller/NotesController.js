@@ -1,5 +1,5 @@
 const  Problem =require( "../models/Notesmodel");
-
+const Usermodel= require("../models/Usermodel")
 const jwt=require("jsonwebtoken")
 
 const util= require("util");
@@ -18,11 +18,19 @@ const client = require('twilio')(accountSid, authToken);
 // CREATE a new problem
 const createProblem = async (req, res) => {
   try {
-    const { title, link, notes, reminderAt, phoneNumber, user } = req.body;
-      console.log("server pe ----user id------",user)
-    if (!user) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
+    const { title, link, notes, reminderAt, phoneNumber,repeat = "none",  user } = req.body;
+      // console.log("server pe ----user id------",user)
+    
+      if (!user) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const userfound = await Usermodel.findById(user);
+      if (!userfound) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      console.log("userfound",userfound)
+   
 
     const newProblem = new Problem({
       title,
@@ -32,39 +40,80 @@ const createProblem = async (req, res) => {
       phoneNumber,
       user,
     });
-    console.log("new problem",newProblem)
+    // console.log("new problem",newProblem)
     const savedProblem = await newProblem.save();
 
     if (reminderAt && new Date(reminderAt) > new Date()) {
-      schedule.scheduleJob(new Date(reminderAt), async () => {
-        try {
-          const msg = await client.messages.create({
-            from: process.env.TWILIOPHNO,
-            to: "+919310501448",
-            body: `🔔 Reminder: Your task "${title}" is due!`,
-          });
-          console.log("SMS sent successfully:", msg.sid);
-        } catch (err) {
-          console.error("Failed to send reminder SMS:", err);
-        }
-      });
 
-      console.log("Reminder scheduled for", new Date(reminderAt));
+      let rule;
+
+      const date = new Date(reminderAt);
+
+      switch (repeat.toLowerCase()) {
+        case "daily":
+          rule = new schedule.RecurrenceRule();
+          rule.hour = date.getHours();
+          rule.minute = date.getMinutes();
+          rule.second = 0;
+          break;
+
+        case "weekly":
+          rule = new schedule.RecurrenceRule();
+          rule.dayOfWeek = date.getDay(); // Day of the week (0 for Sunday, 1 for Monday, etc.)
+          rule.hour = date.getHours();
+          rule.minute = date.getMinutes();
+          rule.second = 0;
+          break;
+
+        case "monthly":
+          rule = new schedule.RecurrenceRule();
+          rule.date = date.getDate(); // Day of the month (1st, 2nd, etc.)
+          rule.hour = date.getHours();
+          rule.minute = date.getMinutes();
+          rule.second = 0;
+          break;
+
+
+        default:
+          // One-time reminder
+          rule = date;
+      }
+
+      
+      if (repeat === "none") {
+        // If no repeat, just set the one-time reminder at reminderAt time
+        schedule.scheduleJob(new Date(reminderAt), async () => {
+          try {
+            const msg = await client.messages.create({
+              from: process.env.TWILIOPHNO,
+              to: userfound.phoneNumber,
+              body: `🔔 Reminder: Your task "${title}" is due!`,
+            });
+            // console.log("SMS sent successfully:", msg.sid);
+          } catch (err) {
+            // console.error("Failed to send reminder SMS:", err);
+          }
+        });
+
+      } else {
+        // For repeat, schedule recurring job
+        schedule.scheduleJob(rule, async () => {
+          try {
+            const msg = await client.messages.create({
+              from: process.env.TWILIOPHNO,
+              to: "+919310501448",
+              body: `🔔 Reminder: Your task "${title}" is due!`,
+            });
+            // console.log("Recurring SMS sent successfully:", msg.sid);
+          } catch (err) {
+            // console.error("Failed to send reminder SMS:", err);
+          }
+        });
+      }
+      // console.log("Reminder scheduled for", new Date(reminderAt));
     }
-    
 
-
-
-
-
-
-
-
-
-
-
-
-    console.log("saved problem yha pe",savedProblem)
+    // console.log("saved problem yha pe",savedProblem)
     res.status(201).json(savedProblem);
   } catch (error) {
     res.status(500).json({ message: "Error creating problem", error });
@@ -74,15 +123,20 @@ const createProblem = async (req, res) => {
 
 
 
-
-// GET all problems
 const getAllProblems = async (req, res) => {
   try {
+    // console.log(req.user)
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized: No user info" });
+    }
+
     const userId = req.user.id;
-    console.log("userid dekh get all me",userId)
+    // console.log("UserID (getAllProblems):", userId);
+
     const problems = await Problem.find({ user: userId }).sort({ createdAt: -1 });
     res.status(200).json(problems);
   } catch (error) {
+    // console.error("Error in getAllProblems:", error);
     res.status(500).json({ message: "Error fetching problems", error });
   }
 };
@@ -109,7 +163,7 @@ const updateProblem = async (req, res) => {
       return res.status(404).json({ message: "Problem not found" });
     }
 
-    console.log("deleted", problem); 
+    // console.log("deleted", problem); 
     res.status(200).json({ message: "Problem deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting problem", error });

@@ -26,7 +26,7 @@ async function signuphandler(req,res) {
         }
         //if user doies not exist then add user in db then create token 
         const newuser=await UserModel.create(userobj);
-        console.log(newuser)
+        // console.log(newuser)
         res.status(201).json({
             message:"user signedup sucessfully",
             user:newuser,
@@ -43,7 +43,7 @@ async function loginhandler(req,res){
     try {
         const {email,password}=req.body;
         const user=await UserModel.findOne({email});
-        console.log(user)
+        // console.log(user)
         if(!user){
             return res.status(404).json({
                 message:"invalid email or password",
@@ -103,7 +103,7 @@ async function protecdrouteMiddleware(req,res,next) {
         }
       
         const decrypttoken=await promisedjwtverify(token,process.env.SECRET_KEY);
-        req.userId=decrypttoken.id;
+        req.user = { id: decrypttoken.id };
         next();
     } catch (error) {
         res.status(500).json({

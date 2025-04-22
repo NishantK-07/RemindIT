@@ -13,6 +13,7 @@ const Dashboard = () => {
     link: "",
     notes: "",
     reminderAt: null,
+    repeat: "none",
   });
   const [editingProblem, setEditingProblem] = useState(null);
 
@@ -23,7 +24,7 @@ const Dashboard = () => {
           withCredentials:true
         });
 
-        const data = await res.json;
+        const data =res.data
         // Filter only problems for the logged-in user (just in case backend doesn't)
         const userProblems = data.filter(
           (problem) => problem.user === userData.user._id
@@ -38,8 +39,9 @@ const Dashboard = () => {
       fetchProblems();
     }
   }, [userData]);
-console.log("userdata dekht pehle",userData)
-  console.log("-----------user id dekh ----",userData.user._id);
+  // console.log("userdata dekht pehle",userData)
+  // console.log("-----------user id dekh ----",userData.user._id);
+
   const handleSave = async () => {
     if (!userData || !userData.user._id) {
       alert("User not logged in");
@@ -55,8 +57,9 @@ console.log("userdata dekht pehle",userData)
           reminderAt: newProblem.reminderAt,
           phoneNumber: userData.phoneNumber,
           user: userData.user._id, 
+          repeat: newProblem.repeat || "none",
       });
-      console.log("response------",response)
+      // console.log("response------",response)
       if (response.statusText!="Created"      ) throw new Error("Failed to save problem1");
 
       const savedProblem = await response.data;
@@ -65,7 +68,7 @@ console.log("userdata dekht pehle",userData)
       setShowForm(false);
       setShowReminderPicker(false);
     } catch (err) {
-      console.error("Error saving problem:", err);
+      // console.error("Error saving problem:", err);
       alert("Failed to save problem2");
     }
   };
@@ -84,6 +87,7 @@ console.log("userdata dekht pehle",userData)
       link: problem.link,
       notes: problem.notes,
       reminderAt: problem.reminderAt,
+      repeat: newProblem.repeat || "none",
     });
     setShowForm(true);
   };
@@ -104,6 +108,7 @@ console.log("userdata dekht pehle",userData)
           reminderAt: newProblem.reminderAt,
           phoneNumber: userData.phoneNumber,
           user: userData.user._id,
+          repeat: newProblem.repeat || "none",
         }
       );
       if (response.statusText !== "OK") throw new Error("Failed to update problem");
@@ -117,7 +122,7 @@ console.log("userdata dekht pehle",userData)
       setShowForm(false);
       setShowReminderPicker(false);
     } catch (err) {
-      console.error("Error updating problem:", err);
+      // console.error("Error updating problem:", err);
       alert("Failed to update problem");
     }
   };
@@ -126,12 +131,12 @@ console.log("userdata dekht pehle",userData)
       const res = await axios.delete(`http://localhost:3010/api/notes/${id}`, {
         withCredentials:true
       });
-      console.log("dekh response",res)
+      // console.log("dekh response",res)
       if (res.status!=200) throw new Error("Delete failed");
 
       setProblems(problems.filter((p) => p._id !== id));
     } catch (err) {
-      console.error("Error deleting problem:", err);
+      // console.error("Error deleting problem:", err);
       alert("Failed to delete problem");
     }
   };
@@ -183,6 +188,26 @@ console.log("userdata dekht pehle",userData)
                 setNewProblem({ ...newProblem, notes: e.target.value })
               }
             />
+              {/* New select dropdown for repeat interval */}
+  <div className="flex justify-between items-center">
+    <label htmlFor="repeat" className="text-sm font-medium text-gray-700">
+      Repeat Interval:
+    </label>
+    <select
+      id="repeat"
+      className="p-2 border rounded-md"
+      value={newProblem.repeat || "none"}
+      onChange={(e) =>
+        setNewProblem({ ...newProblem, repeat: e.target.value })
+      }
+    >
+      <option value="none">One-time</option>
+
+      <option value="daily">Every Day</option>
+      <option value="weekly">Every Week</option>
+      <option value="monthly">Every Month</option>
+    </select>
+  </div>
 
 <div className="flex justify-end items-center gap-4">
               {showReminderPicker && (
