@@ -7,14 +7,23 @@
 const dotenv=require("dotenv")
 dotenv.config();
 
-
+const {getCurrentUserFromToken} = require("./controller/UserController")
 const accountSid = process.env.ACCOUNTSID;
 const authToken = process.env.AUTHTOKEN;
 const client = require('twilio')(accountSid, authToken);
 const sendsms=async (body)=>{
+    const token = req.cookies.jwt;
+    const user = await getCurrentUserFromToken(token);  // Ensure it's awaited since it's async
+
+    if (!user.phoneNumber) {
+      return res.status(400).json({
+        message: "User phone number not found",
+        status: "failure",
+      });
+    }
     let msgOptions={
         from : process.env.TWILIOPHNO,
-        to:'+64684651646546',
+        to:user.phoneNumber,
         body,
     };
     try {
@@ -29,4 +38,4 @@ const sendsms=async (body)=>{
     }
 }
 
-sendsms("hello ji padlo sab")
+sendsms("Your revision task scheduled for today")

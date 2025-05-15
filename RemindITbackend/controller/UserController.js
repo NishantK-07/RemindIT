@@ -46,4 +46,19 @@ const getCurrentUser = async (req, res) => {
     });
   }
 };
-module.exports={getCurrentUser}
+const getCurrentUserFromToken = async (token) => {
+  if (!token) {
+    throw new Error("Authentication token missing");
+  }
+
+  const decoded = jwt.verify(token, process.env.SECRET_KEY);
+  const user = await UserModel.findById(decoded.id);
+  
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
+module.exports={getCurrentUser,getCurrentUserFromToken}
