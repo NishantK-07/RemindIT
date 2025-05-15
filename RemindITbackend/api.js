@@ -42,6 +42,7 @@ app.use("/api/user", UserRouter);
 
 const Notesrouter= require("./router/NotesRouter");
 app.use("/api/notes",Notesrouter)
-app.listen(3010,function(){
-    console.log("server listening")
-})
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+});
