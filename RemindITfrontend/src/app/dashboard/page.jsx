@@ -20,8 +20,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchProblems = async () => {
       try {
-        const res = await axios.get("http://localhost:3010/api/notes/", {
-          withCredentials:true
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/`, {
+          withCredentials: true
         });
 
         const data =res.data
@@ -49,7 +49,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3010/api/notes/add", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/add`, {
        
           title: newProblem.title,
           link: newProblem.link,
@@ -100,7 +100,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3010/api/notes/${editingProblem._id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/${editingProblem._id}`,
         {
           title: newProblem.title,
           link: newProblem.link,
@@ -128,7 +128,7 @@ const Dashboard = () => {
   };
   const deleteProblem = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3010/api/notes/${id}`, {
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/${id}`, {
         withCredentials:true
       });
       // console.log("dekh response",res)

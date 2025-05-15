@@ -19,9 +19,15 @@ const ProfilePage = () => {
   if (!isLoggedIn) return null;
 
   const { name, email } = userData.user || {};
-  const createdDate = new Date(userData?.user?.createdAt);
-  const formattedDate = createdDate.toISOString().split("T")[0];
-  
+  let formattedDate = "N/A";
+const createdAt = userData?.user?.createdAt;
+
+if (createdAt) {
+  const createdDate = new Date(createdAt);
+  if (!isNaN(createdDate)) {
+    formattedDate = createdDate.toISOString().split("T")[0];
+  }
+}
   return (
     <div className="min-h-screen bg-gradient-to-tr from-[#f5f7fa] to-[#c3cfe2] flex justify-center items-center px-4 py-10">
       <div className="w-full max-w-2xl bg-white/30 backdrop-blur-lg shadow-2xl rounded-xl p-8 border border-white/40">

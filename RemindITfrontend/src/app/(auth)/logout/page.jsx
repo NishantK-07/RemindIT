@@ -13,7 +13,7 @@ const LogoutPage = () => {
   useEffect(() => {
     const logout = async () => {
       try {
-        const res = await axios.post("http://localhost:3010/api/auth/logout", {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
           withCredentials: true,
         });
         console.log(res)
