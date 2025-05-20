@@ -72,6 +72,7 @@ const Dashboard = () => {
       setShowReminderPicker(false);
        toast.success("Problem saved successfully");
     } catch (err) {
+       console.error("Error saving problem:", err.response?.data || err.message);
       toast.error("Failed to save problem");
     }
   };
