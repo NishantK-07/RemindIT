@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const userData = useSelector((state) => state.userstate); // <-- Redux user
@@ -31,7 +32,7 @@ const Dashboard = () => {
         );
         setProblems(userProblems);
       } catch (err) {
-        console.error("Failed to fetch problems:", err);
+        // console.error("Failed to fetch problems:", err);
       }
     };
 
@@ -43,8 +44,8 @@ const Dashboard = () => {
   // console.log("-----------user id dekh ----",userData.user._id);
 
   const handleSave = async () => {
-    if (!userData || !userData.user._id) {
-      alert("User not logged in");
+    if (!userData || !userData.user || !userData.user._id) {
+     toast.warning("User not logged in");
       return;
     }
 
@@ -67,9 +68,9 @@ const Dashboard = () => {
       setNewProblem({ title: "", link: "", notes: "", reminderAt: null });
       setShowForm(false);
       setShowReminderPicker(false);
+       toast.success("Problem saved successfully");
     } catch (err) {
-      // console.error("Error saving problem:", err);
-      alert("Failed to save problem2");
+      toast.error("Failed to save problem");
     }
   };
 
@@ -94,7 +95,7 @@ const Dashboard = () => {
 
   const handleUpdate = async () => {
     if (!userData || !userData.user._id) {
-      alert("User not logged in");
+       toast.warning("User not logged in");
       return;
     }
 
@@ -121,9 +122,9 @@ const Dashboard = () => {
       setNewProblem({ title: "", link: "", notes: "", reminderAt: null });
       setShowForm(false);
       setShowReminderPicker(false);
+       toast.success("Problem updated successfully");
     } catch (err) {
-      // console.error("Error updating problem:", err);
-      alert("Failed to update problem");
+       toast.error("Failed to update problem");
     }
   };
   const deleteProblem = async (id) => {
@@ -135,9 +136,9 @@ const Dashboard = () => {
       if (res.status!=200) throw new Error("Delete failed");
 
       setProblems(problems.filter((p) => p._id !== id));
+       toast.success("Problem deleted");
     } catch (err) {
-      // console.error("Error deleting problem:", err);
-      alert("Failed to delete problem");
+      toast.error("Failed to delete problem");
     }
   };
 

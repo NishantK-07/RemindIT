@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import StoreProvider from "@/Provider/StoreProvider";
 import AuthProvider from "@/Provider/AuthProvider";
+import { Toaster } from "sonner";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,7 +32,7 @@ export default function RootLayout({ children }) {
         <Header/>
         {children}
         <Footer/>
-                  
+        <Toaster />
         </AuthProvider>
       </body>
     </html>

@@ -20,7 +20,7 @@ import { LucideLoader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { userLoggedInDetails } from "@/Redux/UserSlice";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 import axios from "axios";
 
 
@@ -33,7 +33,7 @@ function login() {
   const router = useRouter();
 
   const userData = useSelector((state) => state.userstate);
-  console.log(userData)
+  // console.log(userData)
   if (userData.isLoggedIn) {
     router.push("/");
     return null;
@@ -43,8 +43,7 @@ function login() {
     setLoading(true);
     try {
       if (email.length === 0 || password.length === 0) {
-        // toast({ title: "Please fill all fields" });
-        // toast("Please fill all fields");
+        toast.warning("Please fill all fields");
       }
       const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/login`, {
         email: email,
@@ -52,17 +51,20 @@ function login() {
       },{
         withCredentials:true
       });
-      console.log(res)
+      // console.log(res)
       if (res.data.status === "success") {
-        dispatch(userLoggedInDetails(res.data));
+        dispatch(userLoggedInDetails(res.data.user));
+        // console.log("Dispatched user:", res.data.user);
+        toast.success("Login successful ✅");
         // setTimeout(() => {
           router.push("/"); // Redirect after showing the toast
         // }, 1500);
       }
+      else{
+        toast.error("Login failed. Try again.");
+      }
     } catch (err) {
-      console.log("err: ", err);
-      // toast.error("Invalid credentials", { position: "top-right", autoClose: 5000 });
-      // toast({ title: "Invalid credentials", variant: 'destructive' });
+        toast.error("Invalid credentials ❌");
     } finally {
       setLoading(false);
     }

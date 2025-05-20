@@ -12,7 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { toast } from "sonner";
+import { toast } from "sonner";
+
 import { useRouter } from "next/navigation";
 import { LucideLoader2 } from "lucide-react";
 import axios from "axios";
@@ -31,7 +32,7 @@ function resetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
     const [isOtpSent, setIsOtpSent] = useState(false); // Flag to determine if OTP is sent
   
 
@@ -39,21 +40,15 @@ function resetPassword() {
     e.preventDefault();
     setLoading(true);
     
-  console.log(userId)
+  // console.log(userId)
   
-    if (
-      password.length === 0 ||
-      confirmPassword.length === 0 ||
-      otp.length == 0
-    ) {
-    //   toast({ title: "Please fill all fields" });
-      setMessage("Please fill all fields")
+    if ( password.length === 0 || confirmPassword.length === 0 || otp.length == 0) {
+     toast.warning("Please fill all fields");
       setLoading(false);
       return;
     }
     if (password !== confirmPassword) {
-    //   toast({ title: "New password and Confirm password do not match" });
-      setMessage("New password and Confirm password do not match")
+      toast.warning("New password and Confirm password do not match");
       setLoading(false);
       return;
     }
@@ -64,25 +59,16 @@ function resetPassword() {
         withCredentials:true
       }
       );
-console.log(res)
       if (res.data.status =="sucess ") {
-        // toast({ title: "Password reset successfully!" });
-        setMessage("Password reset successfully!" )
+         toast.success("Password reset successfully!");
         router.push("/login");
       } else {
-        // toast({ title: "Failed to reset password. Try Again" });
-        setMessage("Failed to reset password. Try Again")
+         toast.error("Failed to reset password. Try again.");
       }
-    } catch (err) {
-      console.log(err)
-      // if (err.data.message === "otp is not found or wrong") {
-      //   // toast({ title: "Invalid OTP" });
-      //   setMessage("Invalid OTP")
-      // } else {
-        // toast({ title: "Error resetting password" });
-        setMessage("Error resetting password:")
-        console.error("Error resetting password:", err);
-      // }
+    } 
+    catch (err) {
+      toast.error("Error resetting password");
+
     } finally {
       setLoading(false);
     }
@@ -145,53 +131,9 @@ console.log(res)
         )}
       </Button>
     </CardFooter>
-    {message && <p className="text-center mt-2">{message}</p>}
+    {/* {message && <p className="text-center mt-2">{message}</p>} */}
   </Card>
 </div>
-
-
-      {/* <Dialog open={showDialog} onOpenChange={() => setShowDialog(false)}>
-        <DialogOverlay>
-          <DialogContent className="p-4 bg-black rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
-            <div className="grid gap-4">
-              <Label htmlFor="otp">Enter OTP</Label>
-              <Input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-              />
-              <Label htmlFor="password">New Password</Label>
-              <Input
-                type="password"
-                placeholder="Enter new password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
-              <Input
-                type="password"
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex justify-end mt-4">
-              <Button type="submit" onClick={handleResetPassword}>
-                Submit
-                {loading && (
-                  <LucideLoader2 className="animate-spin ml-2 w-4 h-4" />
-                )}
-              </Button>
-            </div>
-            {message && <p>{message}</p>}
-          </DialogContent>
-        </DialogOverlay>
-      </Dialog> */}
     </>
   )
 }

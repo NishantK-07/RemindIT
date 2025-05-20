@@ -29,7 +29,7 @@ const createProblem = async (req, res) => {
       if (!userfound) {
         return res.status(404).json({ message: "User not found" });
       }
-      console.log("userfound",userfound)
+      // console.log("userfound",userfound)
    
 
     const newProblem = new Problem({

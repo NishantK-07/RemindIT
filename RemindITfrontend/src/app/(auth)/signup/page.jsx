@@ -18,7 +18,8 @@ import { LogIn, LucideLoader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { userLoggedInDetails } from "@/Redux/UserSlice";
 import { useDispatch ,useSelector} from "react-redux";
-// import { toast } from "sonner";
+import { toast } from "sonner";
+
 import axios from "axios";
 
 function signup() {
@@ -49,17 +50,17 @@ function signup() {
         withCredentials:true
       });
       if (res.data.status === "success") {
-        // dispatch(userLoggedInDetails(res.data.user));
-        
-        // console.log("signup ka data",userData)
+        toast.success("Account created successfully 🎉");
         router.push("/login");
+      } else {
+        toast.error(res.data.message || "Signup failed");
       }
       if (res.data) {
         // toast("Account Created!");
       }
     } catch (err) {
-      console.log("err: ", err);
-    //   toast("Something went wrong");
+      // console.log("err: ", err);
+      toast.error("Something went wrong. Please try again ❌");
     } finally {
       setLoading(false);
     }

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { userLoggedOutDetails } from "@/Redux/UserSlice";
-
+import { toast } from "sonner";
 const LogoutPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -16,16 +16,18 @@ const LogoutPage = () => {
         const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/logout`, {
           withCredentials: true,
         });
-        console.log(res)
+        // console.log(res)
         if (res.data.status === "success") {
-            console.log("iam here")
             dispatch(userLoggedOutDetails());
-
+             toast.success("Logged out successfully 👋");
             router.push("/");
         }
-        
+        else {
+          toast.error("Logout failed. Please try again.");
+          router.push("/");
+        }
       } catch (error) {
-        console.error("Logout failed:", error);
+        toast.error("Logout failed. Please try again.");
         router.push("/"); // fallback if logout fails
       }
     };
