@@ -59,7 +59,9 @@ const Dashboard = () => {
           phoneNumber: userData.phoneNumber,
           user: userData.user._id, 
           repeat: newProblem.repeat || "none",
-      });
+      }
+      ,{ withCredentials: true, }
+    );
       // console.log("response------",response)
       if (response.statusText!="Created"      ) throw new Error("Failed to save problem1");
 
@@ -110,6 +112,10 @@ const Dashboard = () => {
           phoneNumber: userData.phoneNumber,
           user: userData.user._id,
           repeat: newProblem.repeat || "none",
+        }
+        ,
+        {
+          withCredentials: true,
         }
       );
       if (response.statusText !== "OK") throw new Error("Failed to update problem");

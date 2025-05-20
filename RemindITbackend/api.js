@@ -24,7 +24,7 @@ app.use(cookieparser())
 
 
 const corsConfig = {
-  origin: true, // Allow requests from your frontend
+  origin: "https://remind-it-lw5m.vercel.app",
   methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'], // Allowed methods
   allowedHeaders: ['Content-Type', 'Authorization','X-Requested-With','X-HTTP-Method-Override','Accept'], // Allowed headers
   credentials:true
