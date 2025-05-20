@@ -62,8 +62,8 @@ const Dashboard = () => {
       }
       ,{ withCredentials: true, }
     );
-      // console.log("response------",response)
-      if (response.statusText!="Created"      ) throw new Error("Failed to save problem1");
+       console.log("response------",response)
+      if (response.status !== 201     ) throw new Error("Failed to save problem1");
 
       const savedProblem = await response.data;
       setProblems((prev) => [...prev, savedProblem]);
