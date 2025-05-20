@@ -63,9 +63,8 @@ async function loginhandler(req,res){
             maxAge: 1000 * 60 * 60 * 24,
             httpOnly: true,
             path: "/",
-            secure: false,   
-            sameSite: "lax",
-            // secure: true,
+           secure: process.env.NODE_ENV === 'production', // ✅ use HTTPS in prod
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // ✅ allow cross-site cookies in prod
          
            
         })
