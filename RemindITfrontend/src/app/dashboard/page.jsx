@@ -119,7 +119,7 @@ const Dashboard = () => {
           withCredentials: true,
         }
       );
-      if (response.statusText !== "OK") throw new Error("Failed to update problem");
+      if (response.status !== 201  ) throw new Error("Failed to update problem");
 
       const updatedProblem = await response.data;
       setProblems((prev) =>
