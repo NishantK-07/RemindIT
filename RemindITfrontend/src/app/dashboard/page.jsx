@@ -50,12 +50,16 @@ const Dashboard = () => {
     }
 
     try {
+      let reminderAtISO = null;
+        if (newProblem.reminderAt) {
+          reminderAtISO = DateTime.fromISO(newProblem.reminderAt, { zone: 'Asia/Kolkata' }).toISO();
+        }
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/add`, {
        
           title: newProblem.title,
           link: newProblem.link,
           notes: newProblem.notes,
-          reminderAt: newProblem.reminderAt,
+          reminderAt: reminderAtISO,
           phoneNumber: userData.phoneNumber,
           user: userData.user._id, 
           repeat: newProblem.repeat || "none",
@@ -103,13 +107,17 @@ const Dashboard = () => {
     }
 
     try {
+      let reminderAtISO = null;
+      if (newProblem.reminderAt) {
+        reminderAtISO = DateTime.fromISO(newProblem.reminderAt, { zone: 'Asia/Kolkata' }).toISO();
+      }
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/${editingProblem._id}`,
         {
           title: newProblem.title,
           link: newProblem.link,
           notes: newProblem.notes,
-          reminderAt: newProblem.reminderAt,
+          reminderAt: reminderAtISO,
           phoneNumber: userData.phoneNumber,
           user: userData.user._id,
           repeat: newProblem.repeat || "none",
