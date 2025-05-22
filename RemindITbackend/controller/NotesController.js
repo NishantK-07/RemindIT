@@ -16,6 +16,7 @@ const accountSid = process.env.ACCOUNTSID;
 const authToken = process.env.AUTHTOKEN;
 const client = require('twilio')(accountSid, authToken);
 // CREATE a new problem
+const { DateTime } = require("luxon");
 const createProblem = async (req, res) => {
   try {
     const { title, link, notes, reminderAt, phoneNumber,repeat = "none",  user } = req.body;
@@ -46,37 +47,42 @@ const createProblem = async (req, res) => {
     if (reminderAt && new Date(reminderAt) > new Date()) {
 
       let rule;
+      
+       const localTime = DateTime.fromISO(reminderAt, { zone: 'Asia/Kolkata' });
 
-      const date = new Date(reminderAt);
+      const reminderDateUTC = localTime.toUTC().toJSDate();
 
       switch (repeat.toLowerCase()) {
         case "daily":
           rule = new schedule.RecurrenceRule();
-          rule.hour = date.getHours();
-          rule.minute = date.getMinutes();
+          rule.tz = 'Asia/Kolkata';
+          rule.hour = localTime.hour;
+          rule.minute = localTime.minute;
           rule.second = 0;
           break;
 
         case "weekly":
           rule = new schedule.RecurrenceRule();
-          rule.dayOfWeek = date.getDay(); // Day of the week (0 for Sunday, 1 for Monday, etc.)
-          rule.hour = date.getHours();
-          rule.minute = date.getMinutes();
+          rule.tz = 'Asia/Kolkata';
+          rule.dayOfWeek = localTime.weekday % 7; 
+          rule.hour = localTime.hour;
+          rule.minute = localTime.minute;
+
           rule.second = 0;
           break;
 
         case "monthly":
           rule = new schedule.RecurrenceRule();
-          rule.date = date.getDate(); // Day of the month (1st, 2nd, etc.)
-          rule.hour = date.getHours();
-          rule.minute = date.getMinutes();
+          rule.tz = 'Asia/Kolkata';
+          rule.date = localTime.day;
+          rule.hour = localTime.hour;
+          rule.minute = localTime.minute;
           rule.second = 0;
           break;
 
 
         default:
-          // One-time reminder
-          rule = date;
+          rule = reminderDateUTC; 
       }
 
       
@@ -89,7 +95,7 @@ const createProblem = async (req, res) => {
               to: userfound.phoneNumber,
               body: `🔔 Reminder: Your task "${title}" is due!`,
             });
-            // console.log("SMS sent successfully:", msg.sid);
+            
           } catch (err) {
             // console.error("Failed to send reminder SMS:", err);
           }
@@ -101,7 +107,7 @@ const createProblem = async (req, res) => {
           try {
             const msg = await client.messages.create({
               from: process.env.TWILIOPHNO,
-              to: "+919310501448",
+              to:  userfound.phoneNumber,
               body: `🔔 Reminder: Your task "${title}" is due!`,
             });
             // console.log("Recurring SMS sent successfully:", msg.sid);
@@ -110,7 +116,7 @@ const createProblem = async (req, res) => {
           }
         });
       }
-      // console.log("Reminder scheduled for", new Date(reminderAt));
+      // console.log("rem done for", new Date(reminderAt));
     }
 
     // console.log("saved problem yha pe",savedProblem)
@@ -119,7 +125,6 @@ const createProblem = async (req, res) => {
     res.status(500).json({ message: "Error creating problem", error });
   }
 };
-
 
 
 
