@@ -50,7 +50,7 @@ const Dashboard = () => {
     }
 
     try {
-      let reminderAtISO = null;
+        let reminderAtISO = null;
         if (newProblem.reminderAt) {
           reminderAtISO = DateTime.fromISO(newProblem.reminderAt, { zone: 'Asia/Kolkata' }).toISO();
         }
@@ -107,10 +107,12 @@ const Dashboard = () => {
     }
 
     try {
+
       let reminderAtISO = null;
       if (newProblem.reminderAt) {
         reminderAtISO = DateTime.fromISO(newProblem.reminderAt, { zone: 'Asia/Kolkata' }).toISO();
       }
+
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/notes/${editingProblem._id}`,
         {

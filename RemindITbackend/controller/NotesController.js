@@ -47,12 +47,9 @@ const createProblem = async (req, res) => {
     if (reminderAt && new Date(reminderAt) > new Date()) {
 
       let rule;
-
-      // const date = new Date(reminderAt);
-
+      
        const localTime = DateTime.fromISO(reminderAt, { zone: 'Asia/Kolkata' });
 
-      // ✅ Convert local time to UTC JS Date for scheduling
       const reminderDateUTC = localTime.toUTC().toJSDate();
 
       switch (repeat.toLowerCase()) {
@@ -67,7 +64,7 @@ const createProblem = async (req, res) => {
         case "weekly":
           rule = new schedule.RecurrenceRule();
           rule.tz = 'Asia/Kolkata';
-          rule.dayOfWeek = localTime.weekday % 7; // Luxon weekday is 1 (Mon) to 7 (Sun), JS uses 0–6
+          rule.dayOfWeek = localTime.weekday % 7; 
           rule.hour = localTime.hour;
           rule.minute = localTime.minute;
 
